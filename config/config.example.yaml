@@ -1,0 +1,13 @@
+http:
+  host: localhost
+  port: "8080"
+database:
+  host: localhost
+  port: "5432"
+  database: postgres
+  username: postgres
+  password: change-me
+  ssl_mode: disable
+  max_conns: 10
+  min_conns: 1
+
