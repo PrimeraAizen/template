@@ -1,6 +1,7 @@
 http:
   host: localhost
   port: "8080"
+
 database:
   host: localhost
   port: "5432"
@@ -10,4 +11,14 @@ database:
   ssl_mode: disable
   max_conns: 10
   min_conns: 1
+
+logger:
+  level: info          # debug, info, warn, error
+  format: json         # json, text
+  output: stdout       # stdout, stderr, file
+  file_path: ""        # required when output is 'file'
+  add_source: false    # add source file and line number
+  service: template    # service name for logs
+  version: "1.0.0"     # service version
+  environment: development  # development, staging, production
 

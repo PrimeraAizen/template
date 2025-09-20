@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/PrimeraAizen/template/pkg/logger"
 	"github.com/spf13/viper"
 )
 
@@ -18,8 +19,9 @@ const (
 )
 
 type Config struct {
-	Http Http `mapstructure:"http"`
-	PG   PG   `mapstructure:"database"`
+	Http   Http          `mapstructure:"http"`
+	PG     PG            `mapstructure:"database"`
+	Logger logger.Config `mapstructure:"logger"`
 }
 
 func LoadConfig() (*Config, error) {
@@ -67,6 +69,27 @@ func (cfg *Config) Validate() error {
 	if cfg.PG.URL == "" {
 		return fmt.Errorf("missing database url")
 	}
+
+	// Set default logger config if not provided
+	if cfg.Logger.Level == "" {
+		cfg.Logger.Level = logger.LevelInfo
+	}
+	if cfg.Logger.Format == "" {
+		cfg.Logger.Format = "json"
+	}
+	if cfg.Logger.Output == "" {
+		cfg.Logger.Output = "stdout"
+	}
+	if cfg.Logger.Service == "" {
+		cfg.Logger.Service = "template"
+	}
+	if cfg.Logger.Version == "" {
+		cfg.Logger.Version = "1.0.0"
+	}
+	if cfg.Logger.Environment == "" {
+		cfg.Logger.Environment = "development"
+	}
+
 	return nil
 }
 

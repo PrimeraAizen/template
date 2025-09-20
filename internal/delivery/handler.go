@@ -1,34 +1,40 @@
 package delivery
 
 import (
-	"github.com/PrimeraAizen/template/config"
-	"github.com/PrimeraAizen/template/internal/delivery/rest/v1"
-	"github.com/PrimeraAizen/template/internal/service"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 
-	"net/http"
+	"github.com/PrimeraAizen/template/config"
+	v1 "github.com/PrimeraAizen/template/internal/delivery/rest/v1"
+	"github.com/PrimeraAizen/template/internal/service"
+	"github.com/PrimeraAizen/template/pkg/logger"
 )
 
 type Handler struct {
 	services *service.Service
+	logger   *logger.Logger
 }
 
-func NewHandler(services *service.Service) *Handler {
+func NewHandler(services *service.Service, appLogger *logger.Logger) *Handler {
 	return &Handler{
 		services: services,
+		logger:   appLogger,
 	}
 }
 
 func (h *Handler) Init(cfg *config.Config) *gin.Engine {
 	router := gin.New()
 
+	// Add custom middleware
 	router.Use(
-		gin.LoggerWithConfig(gin.LoggerConfig{
-			SkipPaths: []string{"/ping", "/health", "/healthz"},
-		}),
-		gin.Recovery(),
+		logger.RequestIDMiddleware(),
+		logger.LoggingMiddleware(h.logger),
+		logger.RecoveryMiddleware(h.logger),
+		logger.ContextMiddleware(h.logger),
 	)
 
+	// Health check endpoint
 	router.GET("/ping", func(ctx *gin.Context) {
 		ctx.String(http.StatusOK, "pong")
 	})
@@ -39,7 +45,7 @@ func (h *Handler) Init(cfg *config.Config) *gin.Engine {
 }
 
 func (h *Handler) initAPI(router *gin.Engine) {
-	handlerV1 := v1.NewHandler(h.services)
+	handlerV1 := v1.NewHandler(h.services, h.logger)
 	api := router.Group("/api")
 	{
 		handlerV1.Init(api)
