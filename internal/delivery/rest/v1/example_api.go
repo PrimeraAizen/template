@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -18,7 +19,7 @@ func (api *Handler) InitExampleRoutes(router *gin.RouterGroup) {
 func (api *Handler) ExampleEndpoint(c *gin.Context) {
 	// Get logger from context
 	appLogger := logger.GetLoggerFromContext(c.Request.Context())
-
+	fmt.Print("")
 	appLogger.WithComponent("api").WithOperation("example_endpoint").Info("Processing example request")
 
 	err := api.services.ExampleService.ExampleMethod()
